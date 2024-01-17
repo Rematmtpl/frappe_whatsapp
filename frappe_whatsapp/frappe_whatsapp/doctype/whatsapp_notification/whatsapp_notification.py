@@ -99,10 +99,10 @@ class WhatsAppNotification(Document):
                                         "type": "text",
                                         "text": i.supplier
                                     })
-                                if index == 3:
+                                if index == 2:
                                     parameters.append({
                                         "type": "text",
-                                        "text": doc_data[field.field_name]
+                                        "text": frappe.utils.get_url("/app/request-for-quotation/{}".format(doc_data[field.field_name]))
                                     })
                                 else:
                                     parameters.append({
@@ -202,19 +202,11 @@ class WhatsAppNotification(Document):
                 # Pass parameter values
                 if self.fields:
                     parameters = []
-                    for index, field in enumerate(self.fields):
-                        if field == "custom_url":
-                            link = ''
-                            link = doc_data[field.field_name]
-                            parameters.append({
-                                "type": "text",
-                                "text": link
-                            })
-                        else:
-                            parameters.append({
-                                "type": "text",
-                                "text": doc_data[field.field_name]
-                            })
+                    for field in enumerate(self.fields):
+                        parameters.append({
+                            "type": "text",
+                            "text": doc_data[field.field_name]
+                        })
 
                     data['template']["components"] = [{
                         "type": "body",
@@ -302,6 +294,7 @@ class WhatsAppNotification(Document):
             "authorization": f"Bearer {token}",
             "content-type": "application/json"
         }
+        print('data -----------------',data)
         try:
             response = make_post_request(
                 f"{settings.url}/{settings.version}/{settings.phone_id}/messages",
